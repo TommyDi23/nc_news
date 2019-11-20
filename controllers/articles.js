@@ -65,8 +65,8 @@ exports.getCommentsByArticleId = (req, res, next) => {
 };
 
 exports.getAllArticles = (req, res, next) => {
-  const { sort_by } = req.query;
-  sendArticals(sort_by)
+  const { sort_by, order, author, topic } = req.query;
+  sendArticals(sort_by, order, author, topic)
     .then(articles => {
       res.status(200).send(articles);
     })

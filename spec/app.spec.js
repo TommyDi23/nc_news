@@ -237,17 +237,57 @@ describe("/api", () => {
         .get("/api/articles")
         .expect(200)
         .then(({ body }) => {
-          expect(body[0].article_id).to.equal(12);
+          expect(body[0].article_id).to.equal(1);
           expect(body[1].votes).to.equal(0);
         });
     });
-    it("GET 200, responds with an array of article objects in sorted by comment count", () => {
+    it("GET 200, responds with an array of article objects in sorted by article", () => {
       return request(app)
-        .get("/api/articles?sort_by=comment_count")
+        .get("/api/articles?sort_by=article_id")
         .expect(200)
         .then(({ body }) => {
-          expect(body[0].article_id).to.equal(11);
-          expect(body[1].title).to.equal("Z");
+          expect(body[0].article_id).to.equal(12);
+          expect(body[1].title).to.equal("Am I a cat?");
+        });
+    });
+    it("GET 200, responds with an array of article objects sorted by order defaulted to descending", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.be.descendingBy("article_id");
+          expect(body[0].article_id).to.equal(12);
+          expect(body[1].title).to.equal("Am I a cat?");
+        });
+    });
+    it("GET 200, responds with an array of article objects sorted by ascending order", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id&order=asc")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.be.ascendingBy("article_id");
+          expect(body[0].article_id).to.equal(1);
+          expect(body[1].topic).to.equal("mitch");
+        });
+    });
+    it("GET 200, responds with an array of article objects containing the author being queried", () => {
+      return request(app)
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).to.equal(3);
+          expect(body[0].author).to.equal("butter_bridge");
+          expect(body[1].author).to.equal("butter_bridge");
+        });
+    });
+    it("GET 200, responds with an array of article objects containing the author being queried", () => {
+      return request(app)
+        .get("/api/articles?topic=cats")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).to.equal(1);
+          expect(body[0].topic).to.equal("cats");
+          expect(body[0].author).to.equal("rogersop");
         });
     });
   });

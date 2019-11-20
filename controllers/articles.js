@@ -2,7 +2,8 @@ const {
   selectArticleById,
   updateSelectedArticle,
   addCommentToArticle,
-  sendCommentsByArticleId
+  sendCommentsByArticleId,
+  sendArticals
 } = require("../models/articles");
 
 exports.getArticleById = (req, res, next) => {
@@ -46,7 +47,22 @@ exports.postCommentsToArticle = (req, res, next) => {
 exports.getCommentsByArticleId = (req, res, next) => {
   const article_id = req.params.articles;
   const { sort_by, order } = req.query;
-  sendCommentsByArticleId(article_id, sort_by, order).then(commentArr => {
-    res.status(200).send(commentArr);
-  });
+  sendCommentsByArticleId(article_id, sort_by, order)
+    .then(commentArr => {
+      if (commentArr.length === 0) {
+        res.status(404).send({ msg: "404 Not found" });
+      } else {
+        res.status(200).send(commentArr);
+      }
+    })
+    .catch(next);
+};
+
+exports.getAllArticles = (req, res, next) => {
+  const { sort_by } = req.query;
+  sendArticals(sort_by)
+    .then(articles => {
+      res.status(200).send(articles);
+    })
+    .catch(next);
 };

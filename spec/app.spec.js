@@ -157,6 +157,68 @@ describe("/api", () => {
     });
   });
   describe("/articles/:article_id/comments - ERRORS", () => {
-    it("", () => {});
+    it("GET 400, responds with 400 and err message sort by query is not a valid column", () => {
+      return request(app)
+        .get("/api/articles/1/comments?sort_by=not-a-valid-column")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Bad request");
+        });
+    });
+    it("GET 400, responds with 400 and err message article_id is not a valid input", () => {
+      return request(app)
+        .get(
+          "/api/articles/not-a-valid-input/comments?sort_by=not-a-valid-column"
+        )
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Bad request");
+        });
+    });
+    it("GET 404, responds with 404 and err message when article_id does not exist", () => {
+      return request(app)
+        .get("/api/articles/8888/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("404 Not found");
+        });
+    });
+  });
+  describe("/api/articles", () => {
+    it("GET 200, responds with an array of articles", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body[0]).to.contain.keys(
+            "article_id",
+            "title",
+            "body",
+            "votes",
+            "topic",
+            "author",
+            "created_at",
+            "comment_count"
+          );
+        });
+    });
+    it("GET 200, responds with an array of article objects in descending order defaulted to date", () => {
+      return request(app)
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body[0].article_id).to.equal(12);
+          expect(body[1].votes).to.equal(0);
+        });
+    });
+    it("GET 200, responds with an array of article objects in sorted by comment count", () => {
+      return request(app)
+        .get("/api/articles?sort_by=comment_count")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body[0].article_id).to.equal(11);
+          expect(body[1].title).to.equal("Z");
+        });
+    });
   });
 });

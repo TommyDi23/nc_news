@@ -37,3 +37,14 @@ exports.sendCommentsByArticleId = (
     .returning("*")
     .orderBy(sort_by, order);
 };
+
+exports.sendArticals = (sort_by = "created_at") => {
+  return connection
+    .select("articles.*")
+    .from("articles")
+    .leftJoin("comments", "articles.article_id", "comments.article_id")
+    .groupBy("articles.article_id")
+    .count({ comment_count: "comments.comment_id" })
+    .returning("*")
+    .orderBy(sort_by);
+};

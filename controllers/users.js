@@ -8,7 +8,7 @@ exports.getUserByUsername = (req, res, next) => {
         next({ status: "400", msg: "Invalid username" });
       } else {
         const user = userArr[0];
-       
+
         res.status(200).send({ user });
       }
     })

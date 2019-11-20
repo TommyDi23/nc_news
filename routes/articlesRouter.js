@@ -7,16 +7,20 @@ const {
   getAllArticles
 } = require("../controllers/articles");
 
+const { handleErrorsNotAllowed } = require("../routes/errorHandler");
+
 articlesRouter.route("/").get(getAllArticles);
 
 articlesRouter
   .route("/:article_id")
   .get(getArticleById)
-  .patch(updateArticleById);
+  .patch(updateArticleById)
+  .all(handleErrorsNotAllowed);
 
 articlesRouter
   .route("/:articles/comments")
   .post(postCommentsToArticle)
-  .get(getCommentsByArticleId);
+  .get(getCommentsByArticleId)
+  .all(handleErrorsNotAllowed);
 
 module.exports = articlesRouter;

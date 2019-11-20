@@ -90,24 +90,45 @@ describe("/api", () => {
             expect(body.msg).to.equal("404 Not found");
           });
       });
-      xit("PATCH 204, body sent does not include nescessary content", () => {
+      it("PATCH 400, body sent does not include nescessary content", () => {
         return request(app)
-          .patch("/api/articles/2")
+          .patch("/api/articles/1")
           .send({})
-          .expect(204)
+          .expect(400)
           .then(({ body }) => {
-            expect(body.msg).to.equal("No content");
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
+      it("PATCH 400, body sent does not include valid value", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: "not-a-valid-value" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
+          });
+      });
+      it("PATCH 400, body sent includes other properties", () => {
+        return request(app)
+          .patch("/api/articles/1")
+          .send({ inc_votes: 1, name: "Mitch" })
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).to.equal("Bad request");
           });
       });
     });
   });
   describe("/articles/:article_id/comments", () => {
-    xit("POST 201, adds a comment to an article, responds with the posted comment", () => {
+    it("POST 201, adds a comment to an article, responds with the posted comment", () => {
       return request(app)
         .post("/api/articles/1/comments")
-        .send({ username: "Tommy", body: "hey ho" })
+        .send({ username: "butter_bridge", body: "hey ho" })
         .expect(201)
-        .then(({ body }) => {});
+        .then(({ body }) => {
+          expect(body.body).to.equal("hey ho");
+          expect(body.author).to.equal("butter_bridge");
+        });
     });
     it("GET 200, responds with an array of comments for given article id", () => {
       return request(app)
@@ -157,6 +178,15 @@ describe("/api", () => {
     });
   });
   describe("/articles/:article_id/comments - ERRORS", () => {
+    it("POST 400, invalid username when attempting to post", () => {
+      return request(app)
+        .post("/api/articles/1/comments")
+        .send({ username: "notValidUsername", body: "hey ho" })
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("Bad request");
+        });
+    });
     it("GET 400, responds with 400 and err message sort by query is not a valid column", () => {
       return request(app)
         .get("/api/articles/1/comments?sort_by=not-a-valid-column")

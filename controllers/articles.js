@@ -23,14 +23,17 @@ exports.getArticleById = (req, res, next) => {
 exports.updateArticleById = (req, res, next) => {
   const { inc_votes } = req.body;
   const { article_id } = req.params;
+
+  const patchLength = Object.keys(req.body).length;
+
+  if (patchLength > 1) {
+    next({ status: "400", msg: "Bad request" });
+  }
+
   updateSelectedArticle(inc_votes, article_id)
     .then(article => {
-      if (article.length === 0) {
-        res.status(204).send({ msg: "No content" });
-      } else {
-        const updatedArticle = article[0];
-        res.status(200).send(updatedArticle);
-      }
+      const updatedArticle = article[0];
+      res.status(200).send(updatedArticle);
     })
     .catch(next);
 };
@@ -39,9 +42,12 @@ exports.postCommentsToArticle = (req, res, next) => {
   const { username, body } = req.body;
   const { articles } = req.params;
 
-  addCommentToArticle(articles, username, body).then(comment => {
-    console.log(comment);
-  });
+  addCommentToArticle(articles, username, body)
+    .then(comment => {
+      const postedComment = comment[0];
+      res.status(201).send(postedComment);
+    })
+    .catch(next);
 };
 
 exports.getCommentsByArticleId = (req, res, next) => {

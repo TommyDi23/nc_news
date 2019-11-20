@@ -6,9 +6,9 @@ exports.getUserByUsername = (req, res, next) => {
     .then(userArr => {
       if (userArr.length === 0) {
         next({ status: "400", msg: "Invalid username" });
-        // res.status(400).send({ msg: "Invalid username" });
       } else {
         const user = userArr[0];
+       
         res.status(200).send({ user });
       }
     })

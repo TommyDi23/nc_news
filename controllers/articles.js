@@ -11,7 +11,7 @@ exports.getArticleById = (req, res, next) => {
   selectArticleById(article_id)
     .then(articleArr => {
       if (articleArr.length === 0) {
-        res.status(404).send({ msg: "404 Not found" });
+        next({ status: 404, msg: "404 Not found" });
       } else {
         const article = articleArr[0];
         res.status(200).send({ article });
@@ -33,7 +33,8 @@ exports.updateArticleById = (req, res, next) => {
   updateSelectedArticle(inc_votes, article_id)
     .then(article => {
       const updatedArticle = article[0];
-      res.status(200).send(updatedArticle);
+
+      res.status(200).send({ article: updatedArticle });
     })
     .catch(next);
 };
@@ -45,7 +46,8 @@ exports.postCommentsToArticle = (req, res, next) => {
   addCommentToArticle(articles, username, body)
     .then(comment => {
       const postedComment = comment[0];
-      res.status(201).send(postedComment);
+
+      res.status(201).send({ comment: postedComment });
     })
     .catch(next);
 };
@@ -54,11 +56,11 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const article_id = req.params.articles;
   const { sort_by, order } = req.query;
   sendCommentsByArticleId(article_id, sort_by, order)
-    .then(commentArr => {
-      if (commentArr.length === 0) {
+    .then(comments => {
+      if (comments.length === 0) {
         res.status(404).send({ msg: "404 Not found" });
       } else {
-        res.status(200).send(commentArr);
+        res.status(200).send({ comments });
       }
     })
     .catch(next);
@@ -68,7 +70,7 @@ exports.getAllArticles = (req, res, next) => {
   const { sort_by, order, author, topic } = req.query;
   sendArticals(sort_by, order, author, topic)
     .then(articles => {
-      res.status(200).send(articles);
+      res.status(200).send({ articles });
     })
     .catch(next);
 };

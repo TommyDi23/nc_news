@@ -3,7 +3,7 @@ exports.formatDates = list => {
     const newObj = { ...obj };
     newDate = new Date(newObj.created_at);
     newObj.created_at = newDate;
-    console.log(newObj);
+   
     return newObj;
   });
 };
@@ -22,14 +22,13 @@ exports.formatComments = (comments, articleRef) => {
   const newFormattedComments = [];
   comments.forEach(obj => {
     const newObj = { ...obj };
-
     newObj.article_id = articleRef[newObj.belongs_to];
     delete newObj.belongs_to;
     newObj.author = newObj.created_by;
     delete newObj.created_by;
 
     newObj.created_at = new Date(newObj.created_at);
-    console.log(newObj);
+  
     newFormattedComments.push(newObj);
   });
   return newFormattedComments;

@@ -52,6 +52,6 @@ exports.seed = function(knex) {
       const formattedComments = formatComments(commentData, articleRef);
       return knex("comments")
         .insert(formattedComments)
-        .returning("*");
+        
     });
 };

@@ -9,7 +9,10 @@ const {
 
 const { handleErrorsNotAllowed } = require("../routes/errorHandler");
 
-articlesRouter.route("/").get(getAllArticles);
+articlesRouter
+  .route("/")
+  .get(getAllArticles)
+  .all(handleErrorsNotAllowed);
 
 articlesRouter
   .route("/:article_id")

@@ -1,0 +1,8 @@
+{
+  "endpoints": {
+    "topics": "api/topics",
+    "users": "api/users",
+    "articles": "api/articles",
+    "comments": "api/comments"
+  }
+}

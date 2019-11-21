@@ -11,7 +11,7 @@ exports.selectArticleById = article_id => {
     .returning("*");
 };
 
-exports.updateSelectedArticle = (inc_votes, article_id) => {
+exports.updateSelectedArticle = (inc_votes = 0, article_id) => {
   return connection("articles")
     .where("article_id", article_id)
     .increment({ votes: inc_votes })
@@ -54,12 +54,10 @@ exports.sendArticals = (
     .orderBy(sort_by, order)
     .modify(query => {
       if (author) {
-        return query.where("articles.author", author);
-      } else return query;
-    })
-    .modify(query => {
+        query.where("articles.author", author);
+      }
       if (topic) {
-        return query.where("articles.topic", topic);
-      } else return query;
+        query.where("articles.topic", topic);
+      }
     });
 };

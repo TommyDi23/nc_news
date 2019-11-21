@@ -57,11 +57,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const { sort_by, order } = req.query;
   sendCommentsByArticleId(article_id, sort_by, order)
     .then(comments => {
-      if (comments.length === 0) {
-        res.status(404).send({ msg: "404 Not found" });
-      } else {
-        res.status(200).send({ comments });
-      }
+      res.status(200).send({ comments });
     })
     .catch(next);
 };
@@ -70,6 +66,9 @@ exports.getAllArticles = (req, res, next) => {
   const { sort_by, order, author, topic } = req.query;
   sendArticals(sort_by, order, author, topic)
     .then(articles => {
+      if (articles.length === 0) {
+        res.status(404).send({ msg: "404 Not found" });
+      }
       res.status(200).send({ articles });
     })
     .catch(next);

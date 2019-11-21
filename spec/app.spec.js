@@ -11,6 +11,21 @@ describe("/api", () => {
   beforeEach(() => connection.seed.run());
   after(() => connection.destroy());
 
+  describe("/api ERROR", () => {
+    it("STATUS:405", () => {
+      const invalidMethods = ["patch", "post", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Error 405, method not allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+  });
+
   describe("/topics", () => {
     it("GET 200, responds with an array of all the topics", () => {
       return request(app)
@@ -22,6 +37,22 @@ describe("/api", () => {
         });
     });
   });
+
+  describe("/topics INVALID METHODS", () => {
+    it("STATUS:405", () => {
+      const invalidMethods = ["patch", "post", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/topics")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Error 405, method not allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+  });
+
   describe("/users/:username", () => {
     it("GET 200, responds with a user object requested from client", () => {
       return request(app)
@@ -34,10 +65,10 @@ describe("/api", () => {
     });
   });
   describe("/users ERRORS", () => {
-    it("GET 400 for invalid username - status 400 and error message", () => {
+    it("GET 404 for invalid username - status 400 and error message", () => {
       return request(app)
         .get("/api/users/not-a-valid-username")
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
           expect(body.msg).to.equal("Invalid username");
         });
@@ -90,13 +121,14 @@ describe("/api", () => {
             expect(body.msg).to.equal("404 Not found");
           });
       });
-      it("PATCH 400, body sent does not include nescessary content", () => {
+      it("PATCH 200, body sent does not include nescessary content", () => {
         return request(app)
           .patch("/api/articles/1")
           .send({})
-          .expect(400)
+          .expect(200)
           .then(({ body }) => {
-            expect(body.msg).to.equal("Bad request");
+            expect(body.article.votes).to.equal(100);
+            expect(body.article.author).to.equal("butter_bridge");
           });
       });
       it("PATCH 400, body sent does not include valid value", () => {
@@ -178,15 +210,26 @@ describe("/api", () => {
     });
   });
   describe("/articles/:article_id/comments - ERRORS", () => {
-    it("POST 400, invalid username when attempting to post", () => {
+    it("POST 404, invalid username when attempting to post", () => {
       return request(app)
         .post("/api/articles/1/comments")
         .send({ username: "notValidUsername", body: "hey ho" })
-        .expect(400)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.msg).to.equal("Bad request");
+          expect(body.msg).to.equal("404 Not found");
         });
     });
+
+    it("POST 404, POST contains a valid article ID that does not exist", () => {
+      return request(app)
+        .post("/api/articles/10000/comments")
+        .send({ username: "icellusedkars", body: "insert me" })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("404 Not found");
+        });
+    });
+
     it("GET 400, responds with 400 and err message sort by query is not a valid column", () => {
       return request(app)
         .get("/api/articles/1/comments?sort_by=not-a-valid-column")
@@ -205,12 +248,12 @@ describe("/api", () => {
           expect(body.msg).to.equal("Bad request");
         });
     });
-    it("GET 404, responds with 404 and err message when article_id does not exist", () => {
+    it("GET 200, responds with 200 and serves an empty array", () => {
       return request(app)
         .get("/api/articles/8888/comments")
-        .expect(404)
+        .expect(200)
         .then(({ body }) => {
-          expect(body.msg).to.equal("404 Not found");
+          expect(body.comments).to.eql([]);
         });
     });
   });
@@ -275,9 +318,10 @@ describe("/api", () => {
         .get("/api/articles?author=butter_bridge")
         .expect(200)
         .then(({ body }) => {
-          expect(body.articles.length).to.equal(3);
-          expect(body.articles[0].author).to.equal("butter_bridge");
-          expect(body.articles[1].author).to.equal("butter_bridge");
+          for (let i = 0; i < body.articles.length; i++) {
+            expect(body.articles.length).to.equal(3);
+            expect(body.articles[i].author).to.equal("butter_bridge");
+          }
         });
     });
     it("GET 200, responds with an array of article objects containing the author being queried", () => {
@@ -292,6 +336,19 @@ describe("/api", () => {
     });
   });
   describe("/api/articles ERRORS", () => {
+    it("STATUS:405 INVALID METHODS", () => {
+      const invalidMethods = ["patch", "post", "delete"];
+      const methodPromises = invalidMethods.map(method => {
+        return request(app)
+          [method]("/api/articles")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Error 405, method not allowed");
+          });
+      });
+      return Promise.all(methodPromises);
+    });
+
     it("GET 400, sort_by a column that doesn't exist", () => {
       return request(app)
         .get("/api/articles?sort_by=not-a-valid-column")
@@ -300,30 +357,38 @@ describe("/api", () => {
           expect(body.msg).to.equal("Bad request");
         });
     });
-    it("GET 200, author that is not in the database", () => {
-      return request(app)
-        .get("/api/articles?author=not-a-valid-author")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.articles).to.eql([]);
-        });
-    });
-    // it("GET 400, topic that is not in the database", () => {
+    // it("GET 200, author that is not in the database", () => {
     //   return request(app)
-    //     .get("/api/articles?topic=not-a-valid-topic")
-    //     .expect(400)
+    //     .get("/api/articles?author=not-a-valid-author")
+    //     .expect(200)
     //     .then(({ body }) => {
-    //       console.log(body);
-    //       expect(body).to.eql([]);
+    //       expect(body.articles).to.eql([]);
     //     });
     // });
+    it("GET 404, topic that is not in the database", () => {
+      return request(app)
+        .get("/api/articles?topic=not-a-valid-topic")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.eql("404 Not found");
+        });
+    });
+
+    it("GET 404, author that is not in the database", () => {
+      return request(app)
+        .get("/api/articles?author=not-a-valid-author")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.eql("404 Not found");
+        });
+    });
   });
   describe("/api/comments/:comments_id", () => {
-    it("PATCH 202, successfully increments current comments votes", () => {
+    it("PATCH 200, successfully increments current comments votes", () => {
       return request(app)
         .patch("/api/comments/1")
-        .send({ inc_votes: 1 }) // use increments in models
-        .expect(202)
+        .send({ inc_votes: 1 })
+        .expect(200)
         .then(({ body }) => {
           expect(body.comment.votes).to.equal(17);
           expect(body.comment).to.contain.keys(
@@ -336,11 +401,11 @@ describe("/api", () => {
           );
         });
     });
-    it("PATCH 202, successfully decrements current comments votes", () => {
+    it("PATCH 200, successfully decrements current comments votes", () => {
       return request(app)
         .patch("/api/comments/1")
         .send({ inc_votes: -1 }) // use increments in models
-        .expect(202)
+        .expect(200)
         .then(({ body }) => {
           expect(body.comment.votes).to.equal(15);
         });
@@ -352,11 +417,23 @@ describe("/api", () => {
     });
   });
   describe("/api/comments/:comments_id ERRORS", () => {
-    it("PATCH 400, body sent does not include nescessary content", () => {
+    it("PATCH 200, body sent does not include nescessary content", () => {
       return request(app)
         .patch("/api/comments/1")
         .send({})
-        .expect(400);
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comment.votes).to.equal(16);
+          expect(body.comment.comment_id).to.equal(1);
+          expect(body.comment).to.contain.keys(
+            "comment_id",
+            "author",
+            "article_id",
+            "votes",
+            "created_at",
+            "body"
+          );
+        });
     });
     it("PATCH 400, body sent does not include valid value", () => {
       return request(app)
@@ -376,6 +453,17 @@ describe("/api", () => {
           expect(body.msg).to.equal("Bad request");
         });
     });
+
+    it("PATCH 404, body sent includes invalid comment_id", () => {
+      return request(app)
+        .patch("/api/comments/1000")
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.equal("404 Not found");
+        });
+    });
+
     it("DELETE 400, comments id is wrong type of input", () => {
       return request(app)
         .patch("/api/comments/not-a-valid-id")
@@ -384,7 +472,7 @@ describe("/api", () => {
           expect(body.msg).to.equal("Bad request");
         });
     });
-    it("DELETE 404, body sent includes other properties", () => {
+    it("DELETE 404, correct syntax but comment doesn't exist", () => {
       return request(app)
         .delete("/api/comments/88888")
         .expect(404)

@@ -12,8 +12,12 @@ exports.incOrDecCommentVote = (req, res, next) => {
 
   updateCommentVote(comments_id, inc_votes)
     .then(comment => {
-      const updatedComment = comment[0];
-      res.status(202).send({ comment: updatedComment });
+      if (comment.length === 0) {
+        next({ status: "404", msg: "404 Not found" });
+      } else {
+        const updatedComment = comment[0];
+        res.status(200).send({ comment: updatedComment });
+      }
     })
     .catch(next);
 };

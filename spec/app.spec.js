@@ -248,12 +248,12 @@ describe("/api", () => {
           expect(body.msg).to.equal("Bad request");
         });
     });
-    it("GET 200, responds with 200 and serves an empty array", () => {
+    it("GET 404, responds with 404", () => {
       return request(app)
         .get("/api/articles/8888/comments")
-        .expect(200)
+        .expect(404)
         .then(({ body }) => {
-          expect(body.comments).to.eql([]);
+          expect(body.msg).to.eql("Not found artical doesn't exist");
         });
     });
   });
@@ -357,20 +357,20 @@ describe("/api", () => {
           expect(body.msg).to.equal("Bad request");
         });
     });
-    // it("GET 200, author that is not in the database", () => {
-    //   return request(app)
-    //     .get("/api/articles?author=not-a-valid-author")
-    //     .expect(200)
-    //     .then(({ body }) => {
-    //       expect(body.articles).to.eql([]);
-    //     });
-    // });
+    it("GET 404, author that is not in the database", () => {
+      return request(app)
+        .get("/api/articles?author=not-a-valid-author")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).to.eql("Not found author doesn't exist");
+        });
+    });
     it("GET 404, topic that is not in the database", () => {
       return request(app)
         .get("/api/articles?topic=not-a-valid-topic")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).to.eql("404 Not found");
+          expect(body.msg).to.eql("Not found topic doesn't exist");
         });
     });
 
@@ -379,7 +379,23 @@ describe("/api", () => {
         .get("/api/articles?author=not-a-valid-author")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).to.eql("404 Not found");
+          expect(body.msg).to.eql("Not found author doesn't exist");
+        });
+    });
+    it("GET 200, empty array when articles for a author that does exist, but has no articles is requested", () => {
+      return request(app)
+        .get("/api/articles?author=lurker")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.eql([]);
+        });
+    });
+    it("GET 200, empty array when articles for a topic that does exist, but has no articles is requested", () => {
+      return request(app)
+        .get("/api/articles?topic=paper")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).to.eql([]);
         });
     });
   });

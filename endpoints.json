@@ -1,62 +1,196 @@
 {
   "GET /api": {
-    "description": "serves up a json representation of all the available endpoints of the api"
+    "description": "Representation of all available endpoints of the api"
   },
   "GET /api/topics": {
     "description": "serves an array of all topics",
     "queries": [],
     "exampleResponse": {
-      "topics": [{ "slug": "football", "description": "Footie!" }]
+      "topics": [
+        {
+          "slug": "coding",
+          "description": "Code is love, code is life"
+        },
+        {
+          "slug": "football",
+          "description": "FOOTIE!"
+        },
+        {
+          "slug": "cooking",
+          "description": "Hey good looking, what you got cooking?"
+        }
+      ]
     }
   },
   "GET /api/articles": {
     "description": "serves an array of all topics",
-    "queries": ["author", "topic", "sort_by", "order"],
+    "queries": ["author", "topic", "sort_by", "order_by"],
     "exampleResponse": {
       "articles": [
         {
-          "title": "Seafood substitutions are increasing",
-          "topic": "cooking",
-          "author": "weegembump",
-          "body": "Text from the article..",
-          "created_at": 1527695953341
+          "article_id": 6,
+          "title": "JavaScript’s Apply, Call, and Bind Methods are Essential for JavaScript Professionals",
+          "votes": 0,
+          "topic": "coding",
+          "author": "grumpy19",
+          "created_at": "2018-03-14T10:27:39.137Z",
+          "comment_count": "11"
         }
       ]
     }
   },
-
-"GET /api/articles/:article_id": {
-  "description": "serves an object with the article Id",
-  "queries": [
-    "author",
-    "topic",
-    "sort_by",
-    "order"
-  ],
-  "exampleResponse": {
-    "article": {
-      "article_id": 5,
-      "title": "Please stop worrying about Angular 3",
-      "body": "Another Angular version planned already?",
-      "votes": 0,
-      "topic": "coding",
-      "author": "jessjelly",
-      "created_at": "2016-10-24T04:13:02.648Z",
-      "comment_count": "6"
-    }
-  }
-},
-
-  "PATCH /api/comments": {
-    "description": "serves object wi",
-    "queries": [],
+  "GET /api/articles/:article_id": {
+    "description": "serves a response object of the passed in article id ",
     "exampleResponse": {
-      "topics": [
+      "article": {
+        "article_id": 3,
+        "title": "22 Amazing open source React projects",
+        "body": "This is a collection of open source apps built...",
+        "votes": 0,
+        "topic": "coding",
+        "author": "happyamy2016",
+        "created_at": "2017-07-21T17:54:10.346Z",
+        "comment_count": "10"
+      }
+    }
+  },
+  "PATCH /api/articles/article_id": {
+    "description": "serves a response object of the target article with the post object increasing the number of votes",
+    "exampleResponse": {
+      "article": {
+        "article_id": 3,
+        "title": "22 Amazing open source React projects",
+        "body": "This is a collection of open source apps built...",
+        "votes": 0,
+        "topic": "coding",
+        "author": "happyamy2016",
+        "created_at": "2017-07-21T17:54:10.346Z",
+        "comment_count": "10"
+      }
+    }
+  },
+  "GET /api/articles/:article_id/comments": {
+    "description": "serves a response object of all comments in relation to the article_id",
+    "exampleResponse": {
+      "comments": [
         {
-          "slug": "football",
-          "description": "Footie!"
+          "comment_id": 3,
+          "author": "grumpy19",
+          "article_id": 3,
+          "votes": 3,
+          "created_at": "2017-08-31T12:51:40.263Z",
+          "body": "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio."
+        },
+        {
+          "comment_id": 167,
+          "author": "grumpy19",
+          "article_id": 3,
+          "votes": 19,
+          "created_at": "2017-06-25T04:40:26.046Z",
+          "body": "Deleniti itaque et est unde autem. Labore illo commodi quaerat natus fugiat adipisci. Adipisci unde recusandae aliquam suscipit ipsum."
+        },
+        {
+          "comment_id": 145,
+          "author": "jessjelly",
+          "article_id": 3,
+          "votes": 10,
+          "created_at": "2017-02-06T13:01:38.993Z",
+          "body": "Odit aut error. Occaecati et qui. Quam nam aut dolorem."
+        },
+        {
+          "comment_id": 231,
+          "author": "happyamy2016",
+          "article_id": 3,
+          "votes": 11,
+          "created_at": "2016-11-30T01:22:54.754Z",
+          "body": "Consequatur inventore voluptatum hic qui magnam nulla rerum. Beatae sint sed qui iure in est. Quo quibusdam molestias autem animi repellendus at et. Voluptates maxime recusandae. Repudiandae qui nesciunt."
+        },
+        {
+          "comment_id": 51,
+          "author": "grumpy19",
+          "article_id": 3,
+          "votes": -3,
+          "created_at": "2016-11-14T04:48:59.407Z",
+          "body": "Eius dolor ipsa eaque qui sed accusantium est tenetur omnis. Eligendi necessitatibus sunt voluptate occaecati et quis consequuntur aut. Maxime nihil ut quia culpa."
+        },
+        {
+          "comment_id": 142,
+          "author": "tickle122",
+          "article_id": 3,
+          "votes": 2,
+          "created_at": "2016-09-16T07:15:56.338Z",
+          "body": "Dolor et eos. Earum suscipit est quia aut et qui voluptate. Et dolore necessitatibus asperiores qui perferendis. Adipisci rerum quod commodi ut omnis qui. Officiis maxime cum maxime expedita officia quisquam."
+        },
+        {
+          "comment_id": 28,
+          "author": "grumpy19",
+          "article_id": 3,
+          "votes": 2,
+          "created_at": "2016-07-30T02:25:35.163Z",
+          "body": "Dolorem excepturi quaerat. Earum dolor sapiente aut."
+        },
+        {
+          "comment_id": 112,
+          "author": "grumpy19",
+          "article_id": 3,
+          "votes": 11,
+          "created_at": "2016-06-13T22:26:49.171Z",
+          "body": "Voluptatem ipsam doloremque voluptate debitis voluptas nam non delectus rem. Et dicta assumenda dignissimos sed ea. Odit perspiciatis dicta consequatur aut facere in. Accusamus qui laudantium tenetur reprehenderit sed et velit iusto. Illo nihil voluptas rerum."
+        },
+        {
+          "comment_id": 192,
+          "author": "jessjelly",
+          "article_id": 3,
+          "votes": 3,
+          "created_at": "2016-04-29T12:19:54.692Z",
+          "body": "Blanditiis aut a. Ipsum iusto quam quos veritatis repellendus nostrum. Sequi quis culpa."
+        },
+        {
+          "comment_id": 200,
+          "author": "jessjelly",
+          "article_id": 3,
+          "votes": -1,
+          "created_at": "2016-02-21T18:41:09.757Z",
+          "body": "Fugiat aut ipsam ea commodi natus commodi officiis amet. Rerum quae error. Vel eum voluptates corrupti aperiam."
         }
       ]
+    }
+  },
+  "POST /api/articles/:article_id/comments": {
+    "description": "serves a new response object for the new comment that has been passed in",
+    "exampleResponse": {
+      "comment_id": 28,
+      "author": "grumpy19",
+      "article_id": 3,
+      "votes": 2,
+      "created_at": "2016-07-30T02:25:35.163Z",
+      "body": "Dolorem excepturi quaerat. Earum dolor sapiente aut."
+    }
+  },
+  "PATCH /api/comments/:comment_id": {
+    "description": "Gives an updated response object for the votes patched in to the particular comment_id",
+    "exampleResponse": {
+      "count": {
+        "comment_id": 3,
+        "author": "grumpy19",
+        "article_id": 3,
+        "votes": 4,
+        "created_at": "2017-08-31T12:51:40.263Z",
+        "body": "Qui sunt sit voluptas repellendus sed. Voluptatem et repellat fugiat. Rerum doloribus eveniet quidem vero aut sint officiis. Dolor facere et et architecto vero qui et perferendis dolorem. Magni quis ratione adipisci error assumenda ut. Id rerum eos facere sit nihil ipsam officia aspernatur odio."
+      }
+    }
+  },
+  "DELETE /api/comments/:comment_id": {
+    "description": "When the comment_id is deleted, does not provide an update. It will return the same list without the deleted comment"
+  },
+  "GET /users/:username": {
+    "description": "serves a response object for the specific username that is passed in",
+    "exampleResponse": {
+      "avatar_url": "http//www.tumbit.com/profile-image/4/original/mr-grumpy.jpg",
+
+      "username": "grumpy19",
+
+      "name": "Paul Grump"
     }
   }
 }

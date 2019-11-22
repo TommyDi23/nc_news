@@ -35,7 +35,14 @@ exports.sendCommentsByArticleId = (
     .from("comments")
     .where("article_id", article_id)
     .returning("*")
-    .orderBy(sort_by, order);
+    .orderBy(sort_by, order)
+    .then(comments => {
+      if (comments.length < 1) {
+        return Promise.all([[], checkIfExist(article_id)]);
+      } else {
+        return comments;
+      }
+    });
 };
 
 exports.sendArticals = (
@@ -59,5 +66,67 @@ exports.sendArticals = (
       if (topic) {
         query.where("articles.topic", topic);
       }
+    })
+    .then(articles => {
+      if (articles.length < 1) {
+        return Promise.all([
+          [],
+          checkIfTopicExist(topic),
+          checkIfAuthorExist(author)
+        ]);
+      } else {
+        return [articles]
+      }
     });
 };
+
+function checkIfExist(article_id) {
+  return connection
+    .select("*")
+    .from("articles")
+    .where("article_id", article_id)
+    .then(articles => {
+      if (articles.length < 1) {
+        return Promise.reject({
+          status: "404",
+          msg: "Not found artical doesn't exist"
+        });
+      }
+    });
+}
+
+function checkIfTopicExist(topic) {
+  if (!topic) {
+    return true;
+  }
+  return connection
+    .select("*")
+    .from("topics")
+    .where("slug", topic)
+    .then(topic => {
+      if (topic.length < 1) {
+        return Promise.reject({
+          status: "404",
+          msg: "Not found topic doesn't exist"
+        });
+      }
+    });
+}
+
+function checkIfAuthorExist(author) {
+  if (!author) {
+    return true;
+  }
+  return connection
+    .select("*")
+    .from("users")
+    .where("username", author)
+    .then(user => {
+      if (user.length < 1) {
+        return Promise.reject({
+          status: "404",
+          msg: "Not found author doesn't exist"
+        });
+      }
+    });
+}

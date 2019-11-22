@@ -6,13 +6,10 @@ exports.handleCustomErrors = (err, req, res, next) => {
   }
 };
 
-// 42703 - not a valid column
-// 23503 - Key (author)=(notValidUsername) is not present in table "users
-// 22P02 - invalid input syntax for type integer
-//
+
 
 exports.handlePsqlErrors = (err, req, res, next) => {
-  //console.log(err.message.split(" - ")[1]);
+  
   
   const psqlBadRequestCodes = ["42703", "22P02", "23502"];
   if (err.code === "23503") {

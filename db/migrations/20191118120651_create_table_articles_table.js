@@ -6,11 +6,11 @@ exports.up = function(knex) {
     articleTable.integer("votes").defaultTo(0);
     articleTable
       .string("topic")
-      .references("topics.slug")
+      .references("topics.slug").notNullable()
       .onDelete("CASCADE");
     articleTable
       .string("author")
-      .references("users.username")
+      .references("users.username").notNullable()
       .onDelete("CASCADE");
     articleTable.timestamp("created_at").defaultTo(knex.fn.now());
   });

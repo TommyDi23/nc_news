@@ -4,7 +4,7 @@ const usersRouter = require("./usersRouter");
 const articlesRouter = require("./articlesRouter");
 const commentsRouter = require("./commentsRouter");
 const endPoints = require("../endpoints.json");
-const { handleErrorsNotAllowed } = require("../routes/errorHandler");
+const { handleErrorsNotAllowed } = require("../errorHandler");
 
 apiRouter
   .route("/")

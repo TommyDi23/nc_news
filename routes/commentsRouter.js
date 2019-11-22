@@ -3,7 +3,7 @@ const {
   incOrDecCommentVote,
   deleteCommentByCommentId
 } = require("../controllers/comments");
-const { handleErrorsNotAllowed } = require("../routes/errorHandler");
+const { handleErrorsNotAllowed } = require("../errorHandler");
 
 commentsRouter
   .route("/:comments_id")

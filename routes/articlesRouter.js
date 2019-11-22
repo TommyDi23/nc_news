@@ -7,7 +7,7 @@ const {
   getAllArticles
 } = require("../controllers/articles");
 
-const { handleErrorsNotAllowed } = require("../routes/errorHandler");
+const { handleErrorsNotAllowed } = require("../errorHandler");
 
 articlesRouter
   .route("/")

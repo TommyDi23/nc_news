@@ -97,7 +97,7 @@ describe("/api", () => {
     it("PATCH 200, takes an update object and responds with updated article", () => {
       return request(app)
         .patch("/api/articles/1")
-        .send({ inc_votes: 8 }) // use increments in models
+        .send({ inc_votes: 8 }) 
         .expect(200)
         .then(({ body }) => {
           expect(body.article.votes).to.equal(108);
@@ -420,7 +420,7 @@ describe("/api", () => {
     it("PATCH 200, successfully decrements current comments votes", () => {
       return request(app)
         .patch("/api/comments/1")
-        .send({ inc_votes: -1 }) // use increments in models
+        .send({ inc_votes: -1 }) 
         .expect(200)
         .then(({ body }) => {
           expect(body.comment.votes).to.equal(15);

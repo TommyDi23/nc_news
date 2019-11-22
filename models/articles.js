@@ -40,7 +40,7 @@ exports.sendCommentsByArticleId = (
       if (comments.length < 1) {
         return Promise.all([[], checkIfExist(article_id)]);
       } else {
-        return comments;
+        return [comments];
       }
     });
 };

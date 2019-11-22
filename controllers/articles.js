@@ -56,8 +56,7 @@ exports.getCommentsByArticleId = (req, res, next) => {
   const article_id = req.params.articles;
   const { sort_by, order } = req.query;
   sendCommentsByArticleId(article_id, sort_by, order)
-    .then((comments) => {
-     
+    .then(([comments]) => {
       res.status(200).send({ comments });
     })
     .catch(next);

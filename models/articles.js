@@ -28,7 +28,9 @@ exports.addCommentToArticle = (articles, username, body) => {
 exports.sendCommentsByArticleId = (
   article_id,
   sort_by = "created_at",
-  order = "desc"
+  order = "desc",
+  limit = 10,
+  p = 1
 ) => {
   return connection
     .select("*")
@@ -36,6 +38,8 @@ exports.sendCommentsByArticleId = (
     .where("article_id", article_id)
     .returning("*")
     .orderBy(sort_by, order)
+    .limit(limit)
+    .offset((p - 1) * limit)
     .then(comments => {
       if (comments.length < 1) {
         return Promise.all([[], checkIfExist(article_id)]);
@@ -49,7 +53,9 @@ exports.sendArticals = (
   sort_by = "created_at",
   order = "desc",
   author,
-  topic
+  topic,
+  limit = 10,
+  p = 1
 ) => {
   return connection
     .select("articles.*")
@@ -59,6 +65,8 @@ exports.sendArticals = (
     .count({ comment_count: "comments.comment_id" })
     .returning("*")
     .orderBy(sort_by, order)
+    .limit(limit)
+    .offset((p - 1) * limit)
     .modify(query => {
       if (author) {
         query.where("articles.author", author);
@@ -75,7 +83,7 @@ exports.sendArticals = (
           checkIfAuthorExist(author)
         ]);
       } else {
-        return [articles]
+        return [articles];
       }
     });
 };

@@ -97,7 +97,7 @@ describe("/api", () => {
     it("PATCH 200, takes an update object and responds with updated article", () => {
       return request(app)
         .patch("/api/articles/1")
-        .send({ inc_votes: 8 }) 
+        .send({ inc_votes: 8 })
         .expect(200)
         .then(({ body }) => {
           expect(body.article.votes).to.equal(108);
@@ -206,6 +206,25 @@ describe("/api", () => {
           expect(body.comments[0].comment_id).to.equal(4);
           expect(body.comments[1].comment_id).to.equal(13);
           expect(body.comments[0].votes).to.equal(-100);
+        });
+    });
+
+    it("GET 200, responds with an array of comment objects with a limit defaulted to 10", () => {
+      return request(app)
+        .get("/api/articles/1/comments?limit=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments[0].comment_id).to.equal(2);
+          expect(body.comments[1].comment_id).to.equal(3);
+        });
+    });
+    it("GET 200, responds with an array of comment objects on a specific page to start a limit of 2 is added to show this in effect", () => {
+      return request(app)
+        .get("/api/articles/1/comments?p=3&&limit=2")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.comments[0].comment_id).to.equal(6);
+          expect(body.comments[0].article_id).to.equal(1);
         });
     });
   });
@@ -334,6 +353,33 @@ describe("/api", () => {
           expect(body.articles[0].author).to.equal("rogersop");
         });
     });
+    it("GET 200, responds with an array of article objects with a limit defaulted to 10", () => {
+      return request(app)
+        .get("/api/articles?limit=3")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles.length).to.equal(3);
+        });
+    });
+    it("GET 200, responds with an array of article objects on a specific page to start a limit of 5 is added to show this in effect", () => {
+      return request(app)
+        .get("/api/articles?p=2&&limit=5")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles[0].article_id).to.equal(6);
+          expect(body.articles[1].article_id).to.equal(7);
+        });
+    });
+    it("GET 200, responds with an array of article objects written by butter bridge, with a total count or articles", () => {
+      return request(app)
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.total_count).to.equal(3);
+          expect(body.articles[0].article_id).to.equal(1);
+          expect(body.articles[1].article_id).to.equal(9);
+        });
+    });
   });
   describe("/api/articles ERRORS", () => {
     it("STATUS:405 INVALID METHODS", () => {
@@ -420,7 +466,7 @@ describe("/api", () => {
     it("PATCH 200, successfully decrements current comments votes", () => {
       return request(app)
         .patch("/api/comments/1")
-        .send({ inc_votes: -1 }) 
+        .send({ inc_votes: -1 })
         .expect(200)
         .then(({ body }) => {
           expect(body.comment.votes).to.equal(15);

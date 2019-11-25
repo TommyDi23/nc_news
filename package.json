@@ -28,16 +28,14 @@
   },
   "homepage": "https://github.com/northcoders/be-nc-news#readme",
   "dependencies": {
-    "chai": "^4.2.0",
     "express": "^4.17.1",
-    "mocha": "^6.2.2",
     "pg": "^7.12.1",
-    "sams": "^1.0.0",
-    "sams-chai-sorted": "^1.0.2",
-    "sorted": "^0.1.1",
-    "supertest": "^4.0.2"
+    "knex": "^0.20.2"
   },
   "devDependencies": {
-    "knex": "^0.20.2"
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "sams-chai-sorted": "^1.0.2",
+    "supertest": "^4.0.2"
   }
 }

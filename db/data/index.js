@@ -1,10 +1,9 @@
 const ENV = process.env.NODE_ENV || "development";
 const testData = require("./test-data");
 const devData = require("./development-data");
-const development = require('../../knexfile')
 
 const data = {
-  production: development,
+  production: devData,
   development: devData,
   test: testData
 };

@@ -7,6 +7,9 @@ const {
   handleErrorsNotAllowed,
   handleServerErrors
 } = require("./errorHandler");
+const cors = require("cors");
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -20,7 +23,5 @@ app.use(handleCustomErrors);
 app.use(handlePsqlErrors);
 app.use(handleErrorsNotAllowed);
 app.use(handleServerErrors);
-
-
 
 module.exports = app;
